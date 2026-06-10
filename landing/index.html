@@ -69,14 +69,28 @@
             A simple spreadsheet that finds cash-flow leaks, bill timing traps, subscription creep,
             and the leftover number you can actually work with.
           </p>
-          <form class="signup" action="download.html" method="get">
-            <label for="email">Email address</label>
-            <div class="signup-row">
-              <input id="email" name="email" type="email" placeholder="you@example.com" required />
-              <button type="submit">Send the calculator</button>
-            </div>
-            <p class="form-note">Launch note: connect this form to your email platform next so downloads become subscribers.</p>
-          </form>
+          <div class="signup kit-form-wrap">
+            <form
+              class="kit-direct-form"
+              action="https://app.kit.com/forms/9546771/subscriptions"
+              method="post"
+            >
+              <label for="kit-email">Email address</label>
+              <div class="signup-row">
+                <input
+                  id="kit-email"
+                  name="email_address"
+                  type="email"
+                  placeholder="you@example.com"
+                  required
+                />
+                <button type="submit">Send me the calculator</button>
+              </div>
+            </form>
+            <p class="form-note">
+              After subscribing, check your inbox or continue to the download page if Kit redirects you there.
+            </p>
+          </div>
         </div>
       </section>
 
