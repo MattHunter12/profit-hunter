@@ -4,11 +4,15 @@
 
 Subject: Your Money Leak Finder is here
 
-You can grab the calculator here:
+You can grab the workbook here:
 
-[Insert download link]
+[Download the Money Leak Finder](https://profit-hunter-ourhunterbrand-5062s-projects.vercel.app/downloads/money-leak-finder.xlsx)
 
-Start with the yellow input cells. Do not overthink it. Put in your take-home pay, bills, subscriptions, debt minimums, and savings target.
+Open the Start Here tab and follow the tabs from left to right.
+
+Blue and yellow cells are where you enter information. Green cells calculate automatically.
+
+Start by entering your expected income and spending on Monthly Plan. Then add your real paychecks and purchases to Daily Log. The Dashboard and Paycheck Map will show where the plan and real life separated.
 
 The point is not to create a perfect budget today.
 

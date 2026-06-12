@@ -24,6 +24,7 @@ const theme = {
 
 const currency = '"$"#,##0';
 const percent = "0%";
+const excelDate = (year, month, day) => Math.floor((Date.UTC(year, month, day) - Date.UTC(1899, 11, 30)) / 86400000);
 
 const widths = {
   A: 24,
@@ -38,6 +39,15 @@ const widths = {
   J: 210,
   K: 180,
   L: 160,
+  M: 150,
+  N: 150,
+  O: 150,
+  P: 150,
+  Q: 150,
+  R: 150,
+  S: 150,
+  T: 150,
+  U: 150,
 };
 
 const addSheet = (name) => {
@@ -45,10 +55,10 @@ const addSheet = (name) => {
   Object.entries(widths).forEach(([col, px]) => {
     sheet.getRange(`${col}:${col}`).format.columnWidthPx = px;
   });
-  sheet.getRange("A1:L90").format.font.name = "Aptos";
-  sheet.getRange("A1:L90").format.font.size = 11;
-  sheet.getRange("A1:L90").format.wrapText = true;
-  sheet.getRange("A1:L90").format.font.color = theme.ink;
+  sheet.getRange("A1:U90").format.font.name = "Aptos";
+  sheet.getRange("A1:U90").format.font.size = 11;
+  sheet.getRange("A1:U90").format.wrapText = true;
+  sheet.getRange("A1:U90").format.font.color = theme.ink;
   return sheet;
 };
 
@@ -83,40 +93,76 @@ const card = (sheet, range, fill = theme.paper) => {
   sheet.getRange(range).format.borders = { preset: "outside", style: "thin", color: theme.line };
 };
 
+const expenseCategories = [
+  ["Housing", 1850, "Rent, mortgage, HOA dues, or property fees."],
+  ["Utilities", 250, "Electricity, water, gas, trash, and similar household utilities."],
+  ["Insurance", 240, "Auto, renters, homeowners, life, or other insurance premiums."],
+  ["Phone & Internet", 170, "Mobile phone, home internet, and related communication costs."],
+  ["Debt", 520, "Minimum debt payments. Extra payoff is planned on the debt tab."],
+  ["Subscriptions", 218, "Recurring apps, software, memberships, and streaming services."],
+  ["Savings Transfers", 400, "Money moved to emergency savings, sinking funds, or investments."],
+  ["Groceries", 500, "Food at home and normal household basics."],
+  ["Transportation", 150, "Gas, parking, rideshare, tolls, transit, and routine vehicle costs."],
+  ["Medical / Health", 100, "Copays, prescriptions, therapy, dental, vision, and health supplies."],
+  ["Childcare / Family", 0, "Daycare, babysitting, school costs, child support, or family care."],
+  ["Pets", 90, "Pet food, supplies, grooming, boarding, and veterinary costs."],
+  ["Food & Dining", 250, "Restaurants, coffee, airport sandwiches, and convenience meals."],
+  ["Shopping / Personal", 200, "Clothes, personal care, household shopping, and everyday wants."],
+  ["Entertainment", 100, "Movies, hobbies, games, activities, and local events."],
+  ["Travel", 125, "Flights, lodging, rental cars, and trip-related spending."],
+  ["Irregular Planned", 250, "Expected but non-monthly costs such as gifts, annual fees, repairs, and holidays."],
+  ["Miscellaneous", 50, "Truly uncategorized small spending. Review this bucket if it grows."],
+];
+
 const planRows = [
   ["Income", "Income", 4850, "All paychecks and cash received this month."],
-  ["Bills", "Expense", 2940, "Rent/mortgage, utilities, insurance, phone, internet, and required bills."],
-  ["Debt", "Expense", 520, "Minimum debt payments. Extra payoff is planned on the debt tab."],
-  ["Subscriptions", "Expense", 218, "Recurring charges that quietly drain cash flow."],
-  ["Savings Transfers", "Expense", 400, "Money moved to emergency savings, sinking funds, or investments."],
-  ["Groceries", "Expense", 500, "Food at home and normal household basics."],
-  ["Transportation", "Expense", 150, "Gas, parking, rideshare, tolls, and transit."],
-  ["Pets", "Expense", 90, "Dog food, pet supplies, grooming, vet copays, and similar costs."],
-  ["Food & Dining", "Expense", 250, "Restaurants, coffee, airport sandwiches, and convenience meals."],
-  ["Shopping / Life", "Expense", 300, "Clothes, personal care, small wants, and everyday life spending."],
-  ["Travel / Events", "Expense", 125, "Trips, airport costs, activities, concerts, and events."],
-  ["Irregular Expenses", "Expense", 250, "Repairs, gifts, annual fees, school costs, and surprise spending."],
+  ...expenseCategories.map(([category, budget, description]) => [category, "Expense", budget, description]),
   ["Current Emergency Savings", "Info", "", "Enter the cash you currently have set aside for emergencies."],
   ["Starter Emergency Target", "Info", "", "A simple first milestone before getting aggressive elsewhere."],
 ];
 
 const logRows = [
-  ["2026-06-01", "Paycheck 1", "Income", 2450, "Income", "", "Example income entry"],
-  ["2026-06-01", "Rent / mortgage", "Bills", 1850, "Expense", "Need", "Example fixed bill"],
-  ["2026-06-03", "Grocery run", "Groceries", 112, "Expense", "Need", ""],
-  ["2026-06-05", "Dog food", "Pets", 48, "Expense", "Need", "This is how normal real-life spending gets captured"],
-  ["2026-06-08", "Airport sandwich", "Food & Dining", 18, "Expense", "Want", "Small leaks become visible here"],
-  ["2026-06-10", "Streaming bundle", "Subscriptions", 39, "Expense", "Want", ""],
-  ["2026-06-15", "Paycheck 2", "Income", 2400, "Income", "", "Example income entry"],
+  [excelDate(2026, 0, 2), "January paychecks", "Income", 4800, "Income", "", "Example income entry"],
+  [excelDate(2026, 0, 3), "Rent / mortgage", "Housing", 1850, "Expense", "Need", ""],
+  [excelDate(2026, 0, 5), "Utilities and insurance", "Utilities", 350, "Expense", "Need", ""],
+  [excelDate(2026, 0, 8), "Groceries", "Groceries", 465, "Expense", "Need", ""],
+  [excelDate(2026, 0, 12), "Transportation", "Transportation", 138, "Expense", "Need", ""],
+  [excelDate(2026, 0, 18), "Dining and coffee", "Food & Dining", 285, "Expense", "Want", ""],
+  [excelDate(2026, 1, 2), "February paychecks", "Income", 4950, "Income", "", "Example income entry"],
+  [excelDate(2026, 1, 3), "Rent / mortgage", "Housing", 1850, "Expense", "Need", ""],
+  [excelDate(2026, 1, 5), "Utilities", "Utilities", 265, "Expense", "Need", ""],
+  [excelDate(2026, 1, 7), "Insurance", "Insurance", 240, "Expense", "Need", ""],
+  [excelDate(2026, 1, 9), "Groceries", "Groceries", 510, "Expense", "Need", ""],
+  [excelDate(2026, 1, 13), "Dog food and supplies", "Pets", 92, "Expense", "Need", ""],
+  [excelDate(2026, 1, 20), "Debt payments", "Debt", 520, "Expense", "Need", ""],
+  [excelDate(2026, 2, 2), "March paychecks", "Income", 4875, "Income", "", "Example income entry"],
+  [excelDate(2026, 2, 3), "Rent / mortgage", "Housing", 1850, "Expense", "Need", ""],
+  [excelDate(2026, 2, 5), "Phone and internet", "Phone & Internet", 170, "Expense", "Need", ""],
+  [excelDate(2026, 2, 11), "Gas and parking", "Transportation", 176, "Expense", "Need", ""],
+  [excelDate(2026, 2, 15), "Airport sandwich", "Food & Dining", 18, "Expense", "Want", "Small leaks become visible here"],
+  [excelDate(2026, 2, 21), "Streaming and apps", "Subscriptions", 218, "Expense", "Want", ""],
+  [excelDate(2026, 5, 1), "Paycheck 1", "Income", 2450, "Income", "", "Example income entry"],
+  [excelDate(2026, 5, 1), "Rent / mortgage", "Housing", 1850, "Expense", "Need", "Example fixed cost"],
+  [excelDate(2026, 5, 3), "Grocery run", "Groceries", 112, "Expense", "Need", ""],
+  [excelDate(2026, 5, 5), "Dog food", "Pets", 48, "Expense", "Need", "This is how normal real-life spending gets captured"],
+  [excelDate(2026, 5, 8), "Airport sandwich", "Food & Dining", 18, "Expense", "Want", "Small leaks become visible here"],
+  [excelDate(2026, 5, 10), "Streaming bundle", "Subscriptions", 39, "Expense", "Want", ""],
+  [excelDate(2026, 5, 15), "Paycheck 2", "Income", 2400, "Income", "", "Example income entry"],
 ];
 
+const monthRows = Array.from({ length: 12 }, (_, index) => [
+  excelDate(2026, index, 1),
+  4850,
+  ...expenseCategories.map(([, budget]) => budget),
+]);
+
 const billsRows = [
-  [1, "Rent / mortgage", 1850, "Bills", "Yes", "Paycheck 1", "Largest fixed bill"],
-  [5, "Internet", 75, "Bills", "Yes", "Paycheck 1", ""],
+  [1, "Rent / mortgage", 1850, "Housing", "Yes", "Paycheck 1", "Largest fixed cost"],
+  [5, "Internet", 75, "Phone & Internet", "Yes", "Paycheck 1", ""],
   [8, "Car payment", 420, "Debt", "Yes", "Paycheck 1", ""],
-  [12, "Phone", 95, "Bills", "Yes", "Paycheck 1", ""],
-  [15, "Utilities", 190, "Bills", "No", "Paycheck 2", "Average monthly amount"],
-  [18, "Insurance", 160, "Bills", "Yes", "Paycheck 2", ""],
+  [12, "Phone", 95, "Phone & Internet", "Yes", "Paycheck 1", ""],
+  [15, "Utilities", 190, "Utilities", "No", "Paycheck 2", "Average monthly amount"],
+  [18, "Insurance", 160, "Insurance", "Yes", "Paycheck 2", ""],
   [22, "Credit card minimum", 210, "Debt", "Yes", "Paycheck 2", ""],
   [25, "Student loan", 310, "Debt", "Yes", "Paycheck 2", ""],
 ];
@@ -141,17 +187,7 @@ const subsRows = [
 
 const categoryGuide = [
   ["Income", "Paychecks, side income, reimbursements, and cash received.", "Income"],
-  ["Bills", "Rent, utilities, insurance, phone, internet, and required bills.", "Expense"],
-  ["Debt", "Debt minimums and extra payoff.", "Expense"],
-  ["Subscriptions", "Recurring apps, memberships, software, and entertainment.", "Expense"],
-  ["Savings Transfers", "Emergency fund, sinking funds, investing transfers.", "Expense"],
-  ["Groceries", "Food at home and household basics.", "Expense"],
-  ["Transportation", "Gas, parking, rideshare, tolls, transit.", "Expense"],
-  ["Pets", "Pet food, supplies, grooming, vet copays.", "Expense"],
-  ["Food & Dining", "Restaurants, coffee, airport meals, takeout.", "Expense"],
-  ["Shopping / Life", "Clothes, personal care, gifts, everyday wants.", "Expense"],
-  ["Travel / Events", "Trips, airports, concerts, sports, activities.", "Expense"],
-  ["Irregular Expenses", "Repairs, annual fees, surprise costs.", "Expense"],
+  ...expenseCategories.map(([category, , description]) => [category, description, "Expense"]),
 ];
 
 const start = addSheet("Start Here");
@@ -162,151 +198,235 @@ titleBlock(
   "Start here: follow the tabs from left to right."
 );
 section(start, "B6:K6", "How this workbook works");
-start.getRange("B7:K12").values = [
+start.getRange("B7:K14").values = [
   ["1. Start Here", "Read the flow and what each tab is for.", "", "", "", "", "", "", "", ""],
-  ["2. Dashboard", "Review the headline numbers after you enter your plan and actual spending.", "", "", "", "", "", "", "", ""],
-  ["3. Paycheck Map", "Set the budget, then compare it to actuals pulled from the Daily Log.", "", "", "", "", "", "", "", ""],
-  ["4. Daily Log", "Enter real income and spending as life happens. This feeds the actuals.", "", "", "", "", "", "", "", ""],
-  ["5. Bills & Timing", "Plan due dates so you can spot paycheck timing traps.", "", "", "", "", "", "", "", ""],
-  ["6. Debt & Subscriptions", "Enter debt details clearly and choose what to cut, pause, or attack.", "", "", "", "", "", "", "", ""],
+  ["2. Dashboard", "Choose any start and end date to review one month, several months, or year-to-date.", "", "", "", "", "", "", "", ""],
+  ["3. Monthly Plan", "Store a separate budget for every month so prior months never disappear.", "", "", "", "", "", "", "", ""],
+  ["4. Paycheck Map", "Select one month for a focused budget-vs-actual review.", "", "", "", "", "", "", "", ""],
+  ["5. Daily Log", "Keep adding real income and spending. Dates drive every report automatically.", "", "", "", "", "", "", "", ""],
+  ["6. Trends", "Compare monthly income, spending, flex cash, and category percentages across the year.", "", "", "", "", "", "", "", ""],
+  ["7. Bills & Timing", "Plan due dates so you can spot paycheck timing traps.", "", "", "", "", "", "", "", ""],
+  ["8. Debt & Subscriptions", "Enter debt details clearly and choose what to cut, pause, or attack.", "", "", "", "", "", "", "", ""],
 ];
-merge(start, ["C7:K7", "C8:K8", "C9:K9", "C10:K10", "C11:K11", "C12:K12"]);
-start.getRange("B7:B12").format.font.bold = true;
-card(start, "B7:K12", theme.white);
-section(start, "B14:K14", "What to do next");
-start.getRange("B15:K19").values = [
-  ["Step 1", "Set the budget on Paycheck Map. Keep it rough if you need speed.", "", "", "", "", "", "", "", ""],
-  ["Step 2", "Use Daily Log for each paycheck, bill payment, grocery run, pet cost, meal, or impulse buy.", "", "", "", "", "", "", "", ""],
-  ["Step 3", "Use Bills & Timing to see whether the problem is the amount, the timing, or both.", "", "", "", "", "", "", "", ""],
-  ["Step 4", "Use Debt & Subscriptions to clarify balances, minimums, rates, and easy cuts.", "", "", "", "", "", "", "", ""],
-  ["Step 5", "Return to Dashboard and Action Plan for the next concrete move.", "", "", "", "", "", "", "", ""],
+merge(start, ["C7:K7", "C8:K8", "C9:K9", "C10:K10", "C11:K11", "C12:K12", "C13:K13", "C14:K14"]);
+start.getRange("B7:B14").format.font.bold = true;
+card(start, "B7:K14", theme.white);
+section(start, "B16:K16", "What to do next");
+start.getRange("B17:K21").values = [
+  ["Step 1", "Enter a budget for each month on Monthly Plan.", "", "", "", "", "", "", "", ""],
+  ["Step 2", "Keep adding transactions to Daily Log. Never clear prior months.", "", "", "", "", "", "", "", ""],
+  ["Step 3", "Use Paycheck Map for one-month budget-vs-actual review.", "", "", "", "", "", "", "", ""],
+  ["Step 4", "Use Dashboard and Trends for multi-month and yearly analysis.", "", "", "", "", "", "", "", ""],
+  ["Step 5", "Use Bills, Debt, and Action Plan to decide what changes next.", "", "", "", "", "", "", "", ""],
 ];
-merge(start, ["C15:K15", "C16:K16", "C17:K17", "C18:K18", "C19:K19"]);
-start.getRange("B15:B19").format.font.bold = true;
-card(start, "B15:K19", theme.mint);
-section(start, "B22:K22", "Important note");
-start.getRange("B23:K24").values = [
+merge(start, ["C17:K17", "C18:K18", "C19:K19", "C20:K20", "C21:K21"]);
+start.getRange("B17:B21").format.font.bold = true;
+card(start, "B17:K21", theme.mint);
+section(start, "B23:K23", "Important note");
+start.getRange("B24:K25").values = [
   ["This workbook is educational. It is meant to show cash-flow patterns, not provide individualized financial, legal, or investment advice.", "", "", "", "", "", "", "", "", ""],
   ["The daily log is where the trust is built: if spending gets entered there, the dashboard tells the truth.", "", "", "", "", "", "", "", "", ""],
 ];
-merge(start, ["B23:K23", "B24:K24"]);
-card(start, "B23:K24", theme.cream);
+merge(start, ["B24:K24", "B25:K25"]);
+card(start, "B24:K25", theme.cream);
 
 const dash = addSheet("Dashboard");
 titleBlock(
   dash,
   "Dashboard",
-  "Your plan vs actual paycheck truth in one page.",
-  "Review this after updating the Paycheck Map and Daily Log."
+  "Choose any reporting period and see where the money went.",
+  "Change the start and end dates to review one month, several months, or year-to-date."
 );
-section(dash, "B6:K6", "Money Snapshot");
-dash.getRange("B7:C9").values = [["Actual income", ""], ["", ""], ["", ""]];
-dash.getRange("D7:E9").values = [["Actual spending", ""], ["", ""], ["", ""]];
-dash.getRange("F7:G9").values = [["True flex cash", ""], ["", ""], ["", ""]];
-dash.getRange("H7:I9").values = [["Money leak risk", ""], ["", ""], ["", ""]];
-dash.getRange("J7:K9").values = [["First move", ""], ["", ""], ["", ""]];
-merge(dash, ["B7:C7", "B8:C9", "D7:E7", "D8:E9", "F7:G7", "F8:G9", "H7:I7", "H8:I9", "J7:K7", "J8:K9"]);
-dash.getRange("B8").formulas = [["='Paycheck Map'!K8"]];
-dash.getRange("D8").formulas = [["='Paycheck Map'!K9"]];
-dash.getRange("F8").formulas = [["='Paycheck Map'!K10"]];
-dash.getRange("H8").formulas = [["='Paycheck Map'!K11"]];
-dash.getRange("J8").formulas = [["='Paycheck Map'!K14"]];
-card(dash, "B7:C9", theme.mint);
-card(dash, "D7:E9", theme.sky);
-card(dash, "F7:G9", theme.cream);
-card(dash, "H7:I9", theme.rose);
-card(dash, "J7:K9", theme.warm);
-dash.getRange("B7:K7").format.font = { bold: true, color: theme.muted, size: 11 };
-dash.getRange("B8:I9").format.font = { bold: true, color: theme.green, size: 22 };
-dash.getRange("B8:I9").format.numberFormat = currency;
-dash.getRange("H8:I9").format.font.color = theme.rust;
-dash.getRange("J8:K9").format.font = { bold: true, color: theme.green, size: 13 };
-
-section(dash, "B12:F12", "Budget vs Actual");
-dash.getRange("B13:F24").values = [
-  ["Category", "Budget", "Actual", "Difference", "Signal"],
-  ...Array.from({ length: 11 }, () => ["", "", "", "", ""]),
+section(dash, "B6:K6", "Reporting Period");
+dash.getRange("B7:G8").values = [
+  ["Start Date", excelDate(2026, 0, 1), "End Date", excelDate(2026, 5, 30), "Quick use", "Change these two dates"],
+  ["Examples", "Jan 1 to Jan 31", "", "Jan 1 to Jun 30", "", "Any custom period works"],
 ];
-dash.getRange("B14:B24").formulas = Array.from({ length: 11 }, (_, i) => [`='Paycheck Map'!B${i + 9}`]);
-dash.getRange("C14:C24").formulas = Array.from({ length: 11 }, (_, i) => [`='Paycheck Map'!D${i + 9}`]);
-dash.getRange("D14:D24").formulas = Array.from({ length: 11 }, (_, i) => [`='Paycheck Map'!E${i + 9}`]);
-dash.getRange("E14:E24").formulas = Array.from({ length: 11 }, (_, i) => [`='Paycheck Map'!F${i + 9}`]);
-dash.getRange("F14:F24").formulas = Array.from({ length: 11 }, (_, i) => [`='Paycheck Map'!G${i + 9}`]);
-header(dash, "B13:F13");
-dash.getRange("C14:E24").format.numberFormat = currency;
-card(dash, "B13:F24", theme.white);
-dash.getRange("D14:D24").conditionalFormats.add("dataBar", {
-  color: theme.green2,
-  gradient: true,
-});
+dash.getRange("C7:E7").format.fill = theme.cream;
+dash.getRange("C7:E7").format.font = { color: "#0000FF", bold: true };
+dash.getRange("C7:E7").format.numberFormat = "mmm d, yyyy";
+card(dash, "B7:G8", theme.white);
 
-section(dash, "H12:K12", "What the numbers mean");
-dash.getRange("H13:K19").values = [
-  ["Budget vs actual", "", "", ""],
-  ["Positive difference means you are under budget. Negative means that category has become a leak.", "", "", ""],
-  ["Daily Log", "", "", ""],
-  ["The actual column is only as honest as the spending entered on the Daily Log tab.", "", "", ""],
-  ["Most common leak", "", "", ""],
-  ["", "", "", ""],
-  ["", "", "", ""],
+section(dash, "B10:K10", "Money Snapshot");
+dash.getRange("B11:C13").values = [["Actual income", ""], ["", ""], ["", ""]];
+dash.getRange("D11:E13").values = [["Actual spending", ""], ["", ""], ["", ""]];
+dash.getRange("F11:G13").values = [["True flex cash", ""], ["", ""], ["", ""]];
+dash.getRange("H11:I13").values = [["Savings rate", ""], ["", ""], ["", ""]];
+dash.getRange("J11:K13").values = [["Largest expense", ""], ["", ""], ["", ""]];
+merge(dash, ["B11:C11", "B12:C13", "D11:E11", "D12:E13", "F11:G11", "F12:G13", "H11:I11", "H12:I13", "J11:K11", "J12:K13"]);
+dash.getRange("B12").formulas = [["=SUMIFS('Daily Log'!E:E,'Daily Log'!F:F,\"Income\",'Daily Log'!B:B,\">=\"&C7,'Daily Log'!B:B,\"<=\"&E7)"]];
+dash.getRange("D12").formulas = [["=SUMIFS('Daily Log'!E:E,'Daily Log'!F:F,\"Expense\",'Daily Log'!B:B,\">=\"&C7,'Daily Log'!B:B,\"<=\"&E7)"]];
+dash.getRange("F12").formulas = [["=B12-D12"]];
+dash.getRange("H12").formulas = [["=IF(B12=0,0,SUMIFS('Daily Log'!E:E,'Daily Log'!D:D,\"Savings Transfers\",'Daily Log'!B:B,\">=\"&C7,'Daily Log'!B:B,\"<=\"&E7)/B12)"]];
+dash.getRange("J12").formulas = [["=INDEX(B18:B35,MATCH(MAX(D18:D35),D18:D35,0))"]];
+card(dash, "B11:C13", theme.mint);
+card(dash, "D11:E13", theme.sky);
+card(dash, "F11:G13", theme.cream);
+card(dash, "H11:I13", theme.warm);
+card(dash, "J11:K13", theme.rose);
+dash.getRange("B11:K11").format.font = { bold: true, color: theme.muted, size: 11 };
+dash.getRange("B12:G13").format.font = { bold: true, color: theme.green, size: 22 };
+dash.getRange("B12:G13").format.numberFormat = currency;
+dash.getRange("H12:I13").format.font = { bold: true, color: theme.green, size: 22 };
+dash.getRange("H12:I13").format.numberFormat = percent;
+dash.getRange("J12:K13").format.font = { bold: true, color: theme.rust, size: 14 };
+
+section(dash, "B16:G16", "Category Analysis");
+dash.getRange("B17:G35").values = [
+  ["Category", "Budget", "Actual", "% of Income", "Variance", "Signal"],
+  ...expenseCategories.map(([category]) => [category, "", "", "", "", ""]),
 ];
-dash.getRange("H18").formulas = [["='Paycheck Map'!K13"]];
-merge(dash, ["H13:K13", "H14:K14", "H15:K15", "H16:K16", "H17:K17", "H18:K19"]);
-dash.getRange("H13:H17").format.font.bold = true;
-dash.getRange("H18:K19").format.font = { bold: true, color: theme.green, size: 14 };
-card(dash, "H13:K19", theme.cream);
+const monthlyPlanCols = ["D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N"];
+dash.getRange("C18:C28").formulas = monthlyPlanCols.map((col) => [`=SUMIFS('Monthly Plan'!${col}$8:${col}$19,'Monthly Plan'!$B$8:$B$19,\">=\"&DATE(YEAR($C$7),MONTH($C$7),1),'Monthly Plan'!$B$8:$B$19,\"<=\"&EOMONTH($E$7,0))`]);
+dash.getRange("D18:D28").formulas = Array.from({ length: 11 }, (_, i) => [`=SUMIFS('Daily Log'!E:E,'Daily Log'!D:D,B${i + 18},'Daily Log'!B:B,\">=\"&$C$7,'Daily Log'!B:B,\"<=\"&$E$7)`]);
+dash.getRange("E18:E28").formulas = Array.from({ length: 11 }, (_, i) => [`=IF($B$12=0,0,D${i + 18}/$B$12)`]);
+dash.getRange("F18:F28").formulas = Array.from({ length: 11 }, (_, i) => [`=C${i + 18}-D${i + 18}`]);
+dash.getRange("G18:G28").formulas = Array.from({ length: 11 }, (_, i) => [`=IF(F${i + 18}<0,\"Over budget\",\"OK\")`]);
+header(dash, "B17:G17");
+dash.getRange("C18:D28").format.numberFormat = currency;
+dash.getRange("E18:E28").format.numberFormat = percent;
+dash.getRange("F18:F28").format.numberFormat = currency;
+card(dash, "B17:G28", theme.white);
+dash.getRange("E18:E28").conditionalFormats.add("dataBar", { color: theme.blue, gradient: true });
+const expandedDashboardCols = ["D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U"];
+dash.getRange("C18:C35").formulas = expandedDashboardCols.map((col) => [`=SUMIFS('Monthly Plan'!${col}$8:${col}$19,'Monthly Plan'!$B$8:$B$19,">="&DATE(YEAR($C$7),MONTH($C$7),1),'Monthly Plan'!$B$8:$B$19,"<="&EOMONTH($E$7,0))`]);
+dash.getRange("D18:D35").formulas = Array.from({ length: 18 }, (_, i) => [`=SUMIFS('Daily Log'!E:E,'Daily Log'!D:D,B${i + 18},'Daily Log'!B:B,">="&$C$7,'Daily Log'!B:B,"<="&$E$7)`]);
+dash.getRange("E18:E35").formulas = Array.from({ length: 18 }, (_, i) => [`=IF($B$12=0,0,D${i + 18}/$B$12)`]);
+dash.getRange("F18:F35").formulas = Array.from({ length: 18 }, (_, i) => [`=C${i + 18}-D${i + 18}`]);
+dash.getRange("G18:G35").formulas = Array.from({ length: 18 }, (_, i) => [`=IF(F${i + 18}<0,"Over budget","OK")`]);
+dash.getRange("C18:D35").format.numberFormat = currency;
+dash.getRange("E18:E35").format.numberFormat = percent;
+dash.getRange("F18:F35").format.numberFormat = currency;
+card(dash, "B17:G35", theme.white);
+dash.getRange("E18:E35").conditionalFormats.add("dataBar", { color: theme.blue, gradient: true });
 
-section(dash, "B27:K27", "Mini money meeting");
-dash.getRange("B28:K31").values = [
+section(dash, "I16:K16", "Period Insight");
+dash.getRange("I17:K23").values = [
+  ["Biggest expense category", "", ""],
+  ["", "", ""],
+  ["Share of income", "", ""],
+  ["", "", ""],
+  ["Budget variance", "", ""],
+  ["", "", ""],
+  ["Tip", "", ""],
+];
+dash.getRange("I18").formulas = [["=J12"]];
+dash.getRange("I20").formulas = [["=INDEX(E18:E35,MATCH(J12,B18:B35,0))"]];
+dash.getRange("I22").formulas = [["=SUM(F18:F35)"]];
+dash.getRange("I24:K25").values = [["Use the date boxes above to compare a month, quarter, or year-to-date without changing the Daily Log.", "", ""], ["", "", ""]];
+merge(dash, ["I17:K17", "I18:K18", "I19:K19", "I20:K20", "I21:K21", "I22:K22", "I23:K23", "I24:K25"]);
+dash.getRange("I17:I23").format.font.bold = true;
+dash.getRange("I18:K18").format.font = { bold: true, color: theme.rust, size: 15 };
+dash.getRange("I20:K20").format.numberFormat = percent;
+dash.getRange("I22:K22").format.numberFormat = currency;
+card(dash, "I17:K25", theme.cream);
+
+section(dash, "B38:K38", "Mini money meeting");
+dash.getRange("B39:K42").values = [
   ["1", "What category is over budget and why?", "", "", "", "", "", "", "", ""],
   ["2", "Was the issue a real need, a timing problem, or a convenience purchase?", "", "", "", "", "", "", "", ""],
   ["3", "What purchase pattern would I change before next payday?", "", "", "", "", "", "", "", ""],
   ["4", "What one move will make next payday calmer?", "", "", "", "", "", "", "", ""],
 ];
-merge(dash, ["C28:K28", "C29:K29", "C30:K30", "C31:K31"]);
-dash.getRange("B28:B31").format.font.bold = true;
-card(dash, "B28:K31", theme.mint);
+merge(dash, ["C39:K39", "C40:K40", "C41:K41", "C42:K42"]);
+dash.getRange("B39:B42").format.font.bold = true;
+card(dash, "B39:K42", theme.mint);
+
+const monthly = addSheet("Monthly Plan");
+titleBlock(
+  monthly,
+  "Monthly Plan",
+  "Keep a separate budget for every month of the year.",
+  "Change the blue input cells. Prior months remain available for comparisons."
+);
+section(monthly, "B6:U6", "2026 Monthly Budgets - type only in the blue cells");
+monthly.getRange("B7:U19").values = [
+  ["Month", "Expected Income", ...expenseCategories.map(([category]) => category)],
+  ...monthRows,
+];
+header(monthly, "B7:U7");
+monthly.getRange("B8:B19").format.numberFormat = "mmm yyyy";
+monthly.getRange("C8:U19").format.numberFormat = currency;
+monthly.getRange("B8:B19").format.fill = theme.paper;
+monthly.getRange("C8:U19").format.fill = theme.cream;
+monthly.getRange("C8:U19").format.font = { color: "#0000FF" };
+card(monthly, "B7:U19", theme.white);
+section(monthly, "B22:U22", "What every column means");
+monthly.getRange("B23:U26").values = [
+  ["Column B = the month. Column C = the income you expect to receive during that month.", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
+  ["Columns D through U = the amount you plan to spend in the category named at the top of that column.", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
+  ["Do not enter actual spending on this tab. Enter real transactions on Daily Log; Paycheck Map and Dashboard calculate the actuals.", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
+  ["Irregular Planned means expected but non-monthly costs. Miscellaneous is only for genuinely uncategorized small spending.", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
+];
+merge(monthly, ["B23:U23", "B24:U24", "B25:U25", "B26:U26"]);
+card(monthly, "B23:U26", theme.mint);
 
 const map = addSheet("Paycheck Map");
 titleBlock(
   map,
   "Paycheck Map",
-  "Set the budget, then compare it to actuals from the Daily Log.",
-  "Purpose: see what you planned, what happened, and where the leak started."
+  "Choose one month for a focused budget-vs-actual review.",
+  "Budget comes from Monthly Plan. Actuals come from Daily Log."
 );
-section(map, "B6:H6", "Budget vs Actual");
-map.getRange("B7:H21").values = [
-  ["Category", "Type", "Budget", "Actual", "Difference", "Signal", "What this means"],
-  ...planRows.map(([category, type, budget, description]) => [category, type, budget, "", "", "", description]),
+section(map, "B6:H6", "Selected Month");
+map.getRange("B7:D8").values = [["Month to review", excelDate(2026, 5, 1), "Change this date"], ["Report covers", "", ""]];
+map.getRange("C7").format.fill = theme.cream;
+map.getRange("C7").format.font = { color: "#0000FF", bold: true };
+map.getRange("C7").format.numberFormat = "mmm yyyy";
+map.getRange("C8").formulas = [["=TEXT(C7,\"mmm d\")&\" to \"&TEXT(EOMONTH(C7,0),\"mmm d, yyyy\")"]];
+card(map, "B7:D8", theme.white);
+section(map, "B10:H10", "Budget vs Actual");
+map.getRange("B11:H32").values = [
+  ["Category", "Type", "Budget (auto)", "Actual (auto)", "Difference (auto)", "Signal", "What this means"],
+  ...planRows.map(([category, type, , description]) => [category, type, "", "", "", "", description]),
 ];
-header(map, "B7:H7");
-map.getRange("D8:D19").format.fill = theme.paper;
-map.getRange("D20:E21").format.fill = theme.paper;
-map.getRange("D8:E21").format.numberFormat = currency;
-map.getRange("E8").formulas = [["=SUMIF('Daily Log'!F:F,\"Income\",'Daily Log'!E:E)"]];
-map.getRange("E9:E19").formulas = Array.from({ length: 11 }, (_, i) => [`=SUMIF('Daily Log'!D:D,B${i + 9},'Daily Log'!E:E)`]);
-map.getRange("E20:E21").values = [[700], [1000]];
-map.getRange("F8:F19").formulas = Array.from({ length: 12 }, (_, i) => {
-  const row = i + 8;
+header(map, "B11:H11");
+const budgetCols = ["C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N"];
+map.getRange("D12:D23").formulas = budgetCols.map((col) => [`=SUMIF('Monthly Plan'!B:B,$C$7,'Monthly Plan'!${col}:${col})`]);
+map.getRange("E12").formulas = [["=SUMIFS('Daily Log'!E:E,'Daily Log'!F:F,\"Income\",'Daily Log'!B:B,\">=\"&$C$7,'Daily Log'!B:B,\"<=\"&EOMONTH($C$7,0))"]];
+map.getRange("E13:E23").formulas = Array.from({ length: 11 }, (_, i) => [`=SUMIFS('Daily Log'!E:E,'Daily Log'!D:D,B${i + 13},'Daily Log'!B:B,\">=\"&$C$7,'Daily Log'!B:B,\"<=\"&EOMONTH($C$7,0))`]);
+map.getRange("E24:E25").values = [[700], [1000]];
+map.getRange("F12:F23").formulas = Array.from({ length: 12 }, (_, i) => {
+  const row = i + 12;
   return [`=IF(C${row}=\"Income\",E${row}-D${row},D${row}-E${row})`];
 });
-map.getRange("G8:G19").formulas = Array.from({ length: 12 }, (_, i) => {
-  const row = i + 8;
+map.getRange("G12:G23").formulas = Array.from({ length: 12 }, (_, i) => {
+  const row = i + 12;
   return [`=IF(C${row}=\"Income\",IF(F${row}<0,\"Under plan\",\"On track\"),IF(F${row}<0,\"Over budget\",\"OK\"))`];
 });
-map.getRange("F20:F21").formulas = [[""], ["=MAX(0,E21-E20)"]];
-map.getRange("G20").values = [["Manual input"]];
-map.getRange("G21").formulas = [["=IF(F21>0,\"Gap remains\",\"Funded\")"]];
-map.getRange("D8:F21").format.numberFormat = currency;
-card(map, "B7:H21", theme.white);
-section(map, "B24:H24", "How actuals work");
-map.getRange("B25:H27").values = [
-  ["Actuals for Income and Expenses pull from the Daily Log. If a real-life transaction is missing there, it is missing from the dashboard.", "", "", "", "", "", ""],
-  ["Use categories consistently. Dog food goes to Pets. Airport sandwich goes to Food & Dining. Rent goes to Bills. Credit card payment goes to Debt.", "", "", "", "", "", ""],
-  ["Emergency savings is intentionally manual because it is a balance, not a spending transaction.", "", "", "", "", "", ""],
+map.getRange("F24:F25").formulas = [[""], ["=MAX(0,E25-E24)"]];
+map.getRange("G24").values = [["Manual input"]];
+map.getRange("G25").formulas = [["=IF(F25>0,\"Gap remains\",\"Funded\")"]];
+map.getRange("D12:F25").format.numberFormat = currency;
+card(map, "B11:H25", theme.white);
+const expandedBudgetCols = ["C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U"];
+map.getRange("D12:D30").formulas = expandedBudgetCols.map((col) => [`=SUMIF('Monthly Plan'!B:B,$C$7,'Monthly Plan'!${col}:${col})`]);
+map.getRange("E13:E30").formulas = Array.from({ length: 18 }, (_, i) => [`=SUMIFS('Daily Log'!E:E,'Daily Log'!D:D,B${i + 13},'Daily Log'!B:B,">="&$C$7,'Daily Log'!B:B,"<="&EOMONTH($C$7,0))`]);
+map.getRange("E31:E32").values = [[700], [1000]];
+map.getRange("F12:F30").formulas = Array.from({ length: 19 }, (_, i) => {
+  const row = i + 12;
+  return [`=IF(C${row}="Income",E${row}-D${row},D${row}-E${row})`];
+});
+map.getRange("G12:G30").formulas = Array.from({ length: 19 }, (_, i) => {
+  const row = i + 12;
+  return [`=IF(C${row}="Income",IF(F${row}<0,"Under plan","On track"),IF(F${row}<0,"Over budget","OK"))`];
+});
+map.getRange("F31:F32").formulas = [[""], ["=MAX(0,E32-E31)"]];
+map.getRange("G31").values = [["Manual input"]];
+map.getRange("G32").formulas = [["=IF(F32>0,\"Gap remains\",\"Funded\")"]];
+map.getRange("D12:F32").format.numberFormat = currency;
+map.getRange("E31:E32").format = { fill: theme.cream, font: { color: "#0000FF", bold: true }, numberFormat: currency };
+map.getRange("D12:G30").format.font.color = "#008000";
+card(map, "B11:H32", theme.white);
+section(map, "B35:H35", "Where to enter information");
+map.getRange("B36:H39").values = [
+  ["BLUE CELL C7: choose the month you want to review.", "", "", "", "", "", ""],
+  ["Budget (auto): comes from Monthly Plan. Do not type a budget into this table.", "", "", "", "", "", ""],
+  ["Actual (auto): comes from Daily Log. Enter purchases and paychecks there, not here.", "", "", "", "", "", ""],
+  ["BLUE CELLS E31:E32: enter your current emergency savings and target. These are balances, so they are manual.", "", "", "", "", "", ""],
 ];
-merge(map, ["B25:H25", "B26:H26", "B27:H27"]);
-card(map, "B25:H27", theme.mint);
+merge(map, ["B36:H36", "B37:H37", "B38:H38", "B39:H39"]);
+card(map, "B36:H39", theme.mint);
 section(map, "J6:K6", "Calculated results");
 map.getRange("J7:K14").values = [
   ["Result", "Amount / Signal"],
@@ -319,13 +439,13 @@ map.getRange("J7:K14").values = [
   ["Recommended first move", ""],
 ];
 map.getRange("K8:K12").formulas = [
-  ["=E8"],
-  ["=SUM(E9:E19)"],
-  ["=E8-SUM(E9:E19)"],
-  ["=MAX(0,SUM(E9:E19)-E8)"],
-  ["=F21"],
+  ["=E12"],
+  ["=SUM(E13:E30)"],
+  ["=E12-SUM(E13:E30)"],
+  ["=MAX(0,SUM(E13:E30)-E12)"],
+  ["=F32"],
 ];
-map.getRange("K13").formulas = [["=IF(MIN(F9:F19)<0,INDEX(B9:B19,MATCH(MIN(F9:F19),F9:F19,0)),\"No over-budget category yet\")"]];
+map.getRange("K13").formulas = [["=IF(MIN(F13:F30)<0,INDEX(B13:B30,MATCH(MIN(F13:F30),F13:F30,0)),\"No over-budget category yet\")"]];
 map.getRange("K14").formulas = [["=IF(K11>0,\"Cut or reschedule $\"&TEXT(K11,\"#,##0\"),IF(K12>0,\"Move $\"&TEXT(MIN(K10,K12),\"#,##0\")&\" toward starter emergency fund\",\"Protect this rhythm\"))"]];
 header(map, "J7:K7");
 map.getRange("K8:K12").format.numberFormat = currency;
@@ -338,28 +458,98 @@ titleBlock(
   "Enter real income and spending as life happens.",
   "Purpose: feed actuals without making you update the same number twice."
 );
-section(log, "B6:H6", "Transaction log");
-log.getRange("B7:H45").values = [
+section(log, "B6:H6", "Transaction log - use the Category and Need / Want dropdowns");
+log.getRange("B7:H79").values = [
   ["Date", "Description", "Category", "Amount", "Type", "Need / Want", "Notes"],
   ...logRows,
-  ...Array.from({ length: 31 }, () => ["", "", "", "", "", "", ""]),
+  ...Array.from({ length: 46 }, () => ["", "", "", "", "", "", ""]),
 ];
 header(log, "B7:H7");
-log.getRange("B8:B45").format.numberFormat = "yyyy-mm-dd";
-log.getRange("E8:E45").format.numberFormat = currency;
-card(log, "B7:H45", theme.white);
+log.getRange("B8:B79").format.numberFormat = "yyyy-mm-dd";
+log.getRange("E8:E79").format.numberFormat = currency;
+log.getRange("B8:H79").format.fill = theme.cream;
+log.getRange("B8:H79").format.font.color = "#0000FF";
+card(log, "B7:H79", theme.white);
+log.getRange("B8:H79").format.fill = theme.cream;
+log.getRange("B8:H79").format.font.color = "#0000FF";
 section(log, "J6:K6", "Category guide");
-log.getRange("J7:L19").values = [["Category", "Use for", "Type"], ...categoryGuide];
+log.getRange("J7:L26").values = [["Category", "Use for", "Type"], ...categoryGuide];
 header(log, "J7:L7");
-card(log, "J7:L19", theme.cream);
-section(log, "B48:H48", "What counts here");
-log.getRange("B49:H51").values = [
-  ["Use this for groceries, dog food, coffee, airport meals, bills paid, paychecks received, savings transfers, debt payments, and subscriptions.", "", "", "", "", "", ""],
-  ["The goal is not perfection. The goal is enough visibility to catch the leak before the next paycheck.", "", "", "", "", "", ""],
-  ["If a category does not fit, use the closest category for now. The paid kit can go deeper later.", "", "", "", "", "", ""],
+card(log, "J7:L26", theme.cream);
+log.getRange("D8:D79").dataValidation = {
+  rule: { type: "list", formula1: "$J$8:$J$26" },
+};
+log.getRange("G8:G79").dataValidation = {
+  rule: { type: "list", values: ["Need", "Want"] },
+};
+log.getRange("F8:F79").formulas = Array.from({ length: 72 }, (_, index) => {
+  const row = index + 8;
+  return [`=IF(D${row}="","",INDEX($L$8:$L$26,MATCH(D${row},$J$8:$J$26,0)))`];
+});
+log.getRange("F8:F79").format.fill = theme.mint;
+log.getRange("F8:F79").format.font = { color: "#000000" };
+section(log, "J29:L29", "What counts here");
+log.getRange("J30:L32").values = [
+  ["Use this for groceries, dog food, coffee, airport meals, bills paid, paychecks received, savings transfers, debt payments, and subscriptions.", "", ""],
+  ["The goal is not perfection. The goal is enough visibility to catch the leak before the next paycheck.", "", ""],
+  ["If a category does not fit, use the closest category for now. The paid kit can go deeper later.", "", ""],
 ];
-merge(log, ["B49:H49", "B50:H50", "B51:H51"]);
-card(log, "B49:H51", theme.mint);
+merge(log, ["J30:L30", "J31:L31", "J32:L32"]);
+card(log, "J30:L32", theme.mint);
+section(log, "J35:L35", "Daily Log controls", theme.sky);
+log.getRange("J36:L39").values = [
+  ["Category", "Choose from the dropdown; the choices match the Category Guide.", ""],
+  ["Type", "Fills automatically as Income or Expense after Category is selected.", ""],
+  ["Need / Want", "Choose Need or Want from the dropdown. Leave blank for income.", ""],
+  ["Color key", "Blue/yellow cells are inputs. Green cells calculate automatically.", ""],
+];
+merge(log, ["K36:L36", "K37:L37", "K38:L38", "K39:L39"]);
+log.getRange("J36:J39").format.font.bold = true;
+card(log, "J36:L39", theme.white);
+
+const trends = addSheet("Trends");
+titleBlock(
+  trends,
+  "Monthly Trends",
+  "See the story across the year instead of judging one isolated month.",
+  "Income, spending, flex cash, and category percentages update from Daily Log."
+);
+section(trends, "B6:G6", "12-Month Summary");
+trends.getRange("B7:G19").values = [
+  ["Month", "Income", "Spending", "True Flex Cash", "Savings", "Savings Rate"],
+  ...Array.from({ length: 12 }, (_, index) => [excelDate(2026, index, 1), "", "", "", "", ""]),
+];
+trends.getRange("C8:C19").formulas = Array.from({ length: 12 }, (_, i) => [`=SUMIFS('Daily Log'!E:E,'Daily Log'!F:F,\"Income\",'Daily Log'!B:B,\">=\"&B${i + 8},'Daily Log'!B:B,\"<=\"&EOMONTH(B${i + 8},0))`]);
+trends.getRange("D8:D19").formulas = Array.from({ length: 12 }, (_, i) => [`=SUMIFS('Daily Log'!E:E,'Daily Log'!F:F,\"Expense\",'Daily Log'!B:B,\">=\"&B${i + 8},'Daily Log'!B:B,\"<=\"&EOMONTH(B${i + 8},0))`]);
+trends.getRange("E8:E19").formulas = Array.from({ length: 12 }, (_, i) => [`=C${i + 8}-D${i + 8}`]);
+trends.getRange("F8:F19").formulas = Array.from({ length: 12 }, (_, i) => [`=SUMIFS('Daily Log'!E:E,'Daily Log'!D:D,\"Savings Transfers\",'Daily Log'!B:B,\">=\"&B${i + 8},'Daily Log'!B:B,\"<=\"&EOMONTH(B${i + 8},0))`]);
+trends.getRange("G8:G19").formulas = Array.from({ length: 12 }, (_, i) => [`=IF(C${i + 8}=0,0,F${i + 8}/C${i + 8})`]);
+header(trends, "B7:G7");
+trends.getRange("B8:B19").format.numberFormat = "mmm yyyy";
+trends.getRange("C8:F19").format.numberFormat = currency;
+trends.getRange("G8:G19").format.numberFormat = percent;
+card(trends, "B7:G19", theme.white);
+
+section(trends, "B22:G22", "Expense Categories as % of Income");
+trends.getRange("B23:G35").values = [
+  ["Month", "Housing %", "Transportation %", "Groceries %", "Food & Dining %", "Debt %"],
+  ...Array.from({ length: 12 }, (_, index) => [excelDate(2026, index, 1), "", "", "", "", ""]),
+];
+for (const [col, category] of [["C", "Housing"], ["D", "Transportation"], ["E", "Groceries"], ["F", "Food & Dining"], ["G", "Debt"]]) {
+  trends.getRange(`${col}24:${col}35`).formulas = Array.from({ length: 12 }, (_, i) => [`=IF($C${i + 8}=0,0,SUMIFS('Daily Log'!E:E,'Daily Log'!D:D,\"${category}\",'Daily Log'!B:B,\">=\"&B${i + 24},'Daily Log'!B:B,\"<=\"&EOMONTH(B${i + 24},0))/$C${i + 8})`]);
+}
+header(trends, "B23:G23");
+trends.getRange("B24:B35").format.numberFormat = "mmm yyyy";
+trends.getRange("C24:G35").format.numberFormat = percent;
+card(trends, "B23:G35", theme.white);
+trends.getRange("C24:G35").conditionalFormats.add("dataBar", { color: theme.blue, gradient: true });
+
+const trendChart = trends.charts.add("line", trends.getRange("B7:E19"));
+trendChart.setPosition("I7", "P20");
+trendChart.title = "Income, Spending, and Flex Cash by Month";
+trendChart.hasLegend = true;
+trendChart.xAxis = { axisType: "textAxis", tickLabelInterval: 1 };
+trendChart.yAxis = { numberFormatCode: "$#,##0" };
 
 const bills = addSheet("Bills & Timing");
 titleBlock(
@@ -395,7 +585,7 @@ titleBlock(
   "Enter debt details clearly and choose one focus area.",
   "Purpose: reduce pressure without starving the rest of the month."
 );
-section(debt, "B6:I6", "Debt details");
+section(debt, "B6:I6", "Debt details - enter blue cells; Monthly Total calculates automatically");
 debt.getRange("B7:I16").values = [
   ["Debt Name", "Current Balance", "Interest Rate / APR", "Minimum Payment", "Extra Target", "Due Day", "Monthly Total", "Notes"],
   ...debtRows.map((row) => [row[0], row[1], row[2] / 100, row[3], row[4], row[5], "", row[6]]),
@@ -408,6 +598,12 @@ debt.getRange("D8:D16").format.numberFormat = "0.00%";
 debt.getRange("E8:F16").format.numberFormat = currency;
 debt.getRange("H8:H16").format.numberFormat = currency;
 card(debt, "B7:I16", theme.white);
+debt.getRange("B8:G16").format.fill = theme.cream;
+debt.getRange("B8:G16").format.font.color = "#0000FF";
+debt.getRange("I8:I16").format.fill = theme.cream;
+debt.getRange("I8:I16").format.font.color = "#0000FF";
+debt.getRange("H8:H16").format.fill = theme.mint;
+debt.getRange("H8:H16").format.font.color = "#000000";
 section(debt, "B19:H19", "Subscription audit");
 debt.getRange("B20:G33").values = [
   ["Subscription", "Monthly Cost", "Keep / Cut / Review", "Annual Cost", "Reason", "Action"],
@@ -419,6 +615,12 @@ header(debt, "B20:G20");
 debt.getRange("C21:C33").format.numberFormat = currency;
 debt.getRange("E21:E33").format.numberFormat = currency;
 card(debt, "B20:G33", theme.white);
+debt.getRange("B21:D33").format.fill = theme.cream;
+debt.getRange("B21:D33").format.font.color = "#0000FF";
+debt.getRange("F21:G33").format.fill = theme.cream;
+debt.getRange("F21:G33").format.font.color = "#0000FF";
+debt.getRange("E21:E33").format.fill = theme.mint;
+debt.getRange("E21:E33").format.font.color = "#000000";
 debt.getRange("E21:E33").conditionalFormats.add("dataBar", {
   color: theme.rust,
   gradient: true,
@@ -444,6 +646,19 @@ debt.getRange("J16:K18").values = [
 ];
 merge(debt, ["J16:K16", "J17:K17", "J18:K18"]);
 card(debt, "J16:K18", theme.mint);
+section(debt, "J20:K20", "Debt column guide", theme.sky);
+debt.getRange("J21:K28").values = [
+  ["Current Balance", "Total amount still owed today"],
+  ["Interest Rate / APR", "Annual interest rate shown as a percentage"],
+  ["Minimum Payment", "Required monthly payment"],
+  ["Extra Target", "Optional extra amount you plan to pay"],
+  ["Due Day", "Calendar day the payment is due"],
+  ["Monthly Total", "Automatic: minimum payment plus extra target"],
+  ["Notes", "Anything that helps explain the debt or strategy"],
+  ["Color key", "Blue/yellow = enter it; green = calculated"],
+];
+debt.getRange("J21:J28").format.font.bold = true;
+card(debt, "J21:K28", theme.white);
 
 const action = addSheet("Action Plan");
 titleBlock(
@@ -476,7 +691,7 @@ action.getRange("B18:K18").format.font = { bold: true, color: theme.green, size:
 card(action, "B18:K19", theme.mint);
 section(action, "B22:K22", "The 20-minute monthly rhythm");
 action.getRange("B23:K28").values = [
-  ["1", "Set or adjust the budget on Paycheck Map.", "", "", "", "", "", "", "", ""],
+  ["1", "Set or adjust the budget on Monthly Plan.", "", "", "", "", "", "", "", ""],
   ["2", "Enter actual income and spending in Daily Log.", "", "", "", "", "", "", "", ""],
   ["3", "Check bills due before each paycheck.", "", "", "", "", "", "", "", ""],
   ["4", "Review subscriptions and debt pressure.", "", "", "", "", "", "", "", ""],
@@ -487,12 +702,32 @@ merge(action, ["C23:K23", "C24:K24", "C25:K25", "C26:K26", "C27:K27", "C28:K28"]
 action.getRange("B23:B28").format.font.bold = true;
 card(action, "B23:K28", theme.cream);
 
-for (const sheet of [start, dash, map, log, bills, debt, action]) {
+for (const sheet of [start, dash, monthly, map, log, trends, bills, debt, action]) {
   sheet.getRange("B2:K4").format.borders = { preset: "outside", style: "thin", color: theme.green };
-  sheet.getRange("B6:K80").format.borders = { preset: "inside", style: "thin", color: "#EFE7DA" };
-  sheet.getRange("B6:K80").format.borders = { preset: "outside", style: "thin", color: theme.line };
+  sheet.getRange("B6:U90").format.borders = { preset: "inside", style: "thin", color: "#EFE7DA" };
+  sheet.getRange("B6:U90").format.borders = { preset: "outside", style: "thin", color: theme.line };
   sheet.getRange("A:A").format.columnWidthPx = 24;
 }
+
+for (const [sheet, range] of [
+  [dash, "B17:G17"],
+  [monthly, "B7:U7"],
+  [map, "B11:H11"],
+  [log, "B7:H7"],
+  [log, "J7:L7"],
+  [trends, "B7:G7"],
+  [trends, "B23:G23"],
+  [bills, "B7:H7"],
+  [debt, "B7:I7"],
+  [debt, "B20:G20"],
+  [action, "B7:K7"],
+]) {
+  header(sheet, range);
+}
+monthly.getRange("B7:U7").format.rowHeightPx = 54;
+map.getRange("B11:H11").format.rowHeightPx = 42;
+debt.getRange("B7:I7").format.rowHeightPx = 42;
+debt.getRange("B20:G20").format.rowHeightPx = 42;
 
 const errors = await workbook.inspect({
   kind: "match",
@@ -503,15 +738,20 @@ const errors = await workbook.inspect({
 console.log(errors.ndjson);
 
 for (const [sheetName, range] of [
-  ["Start Here", "B2:K24"],
-  ["Dashboard", "B2:K31"],
-  ["Paycheck Map", "B2:K27"],
-  ["Daily Log", "B2:L51"],
+  ["Start Here", "B2:K25"],
+  ["Dashboard", "B2:K42"],
+  ["Monthly Plan", "B2:U26"],
+  ["Paycheck Map", "B2:K39"],
+  ["Daily Log", "B2:L40"],
+  ["Trends", "B2:P35"],
   ["Bills & Timing", "B2:K33"],
   ["Debt & Subscriptions", "B2:K33"],
   ["Action Plan", "B2:K28"],
 ]) {
-  await workbook.render({ sheetName, range, scale: 1 });
+  const preview = await workbook.render({ sheetName, range, scale: 1 });
+  const previewName = sheetName.toLowerCase().replaceAll(" ", "-").replaceAll("&", "and");
+  await fs.mkdir(outputDir, { recursive: true });
+  await fs.writeFile(new URL(`preview-${previewName}.png`, outputDir), new Uint8Array(await preview.arrayBuffer()));
 }
 
 await fs.mkdir(outputDir, { recursive: true });
