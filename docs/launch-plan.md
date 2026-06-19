@@ -1,8 +1,21 @@
-# Launch Plan: First 7 Days
+# Launch Plan
 
 ## Objective
 
 Validate whether people who earn decent money but feel broke before payday will trade an email address and then money for an accountant-backed paycheck system.
+
+## Current Status
+
+- Landing page is live on Vercel.
+- Money Leak Finder workbook is connected to the download page.
+- Kit form, incentive delivery, sending domain, welcome sequence, and automation are active.
+- The free lead magnet is ready for real traffic.
+
+## Active Step
+
+Step 17 is the traffic launch.
+
+Use `marketing/launch-traffic-plan.md` for the exact posts, outreach message, metrics, and first 10 days of launch activity.
 
 ## Day 1: Ship The Lead Magnet
 
@@ -76,9 +89,9 @@ Decision rules:
 
 ## Immediate Build Queue
 
-1. Connect landing page form.
-2. Create checkout page/product.
-3. Expand workbook into paid starter kit.
-4. Record walkthrough video.
-5. Publish first three content posts.
-6. Deploy landing page publicly.
+1. Publish first three launch posts.
+2. Send direct outreach to 25 people.
+3. Track landing page visits, subscribers, replies, and questions.
+4. Collect reader language for the paid product.
+5. Create the $29 Paycheck Peace System checkout after demand signals appear.
+6. Record a workbook walkthrough video once the launch message is converting.
